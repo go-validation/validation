@@ -1,30 +1,29 @@
 package validation
 
 type NumField[T NumValue] struct {
-	FieldValidator[T]
+	FieldValidator[*T]
 }
 
 type NumValue interface {
-	~*int | ~*int8 | ~*int16 | ~*int32 | ~*int64 |
-		~*uint | ~*uint8 | ~*uint16 | ~*uint32 | ~*uint64 |
-		~*float32 | ~*float64
+	~int | ~int8 | ~int16 | ~int32 | ~int64 |
+		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
+		~float32 | ~float64
 }
 
-func Num[T NumValue](fieldName string, value T) *NumField[T] {
+func Num[T NumValue](fieldName string, value *T) *NumField[T] {
 	return &NumField[T]{
-		FieldValidator[T]{
+		FieldValidator[*T]{
 			fieldName: fieldName,
 			value:     value,
 		},
 	}
 }
 
-func NotZeroRule[T NumValue]() ValidationRule[T] {
-	return &rule[T]{
+func NotZeroRule[T NumValue]() ValidationRule[*T] {
+	return &rule[*T]{
 		code: MsgKeyNumberNotZero,
-		validatorFn: func(value T) (bool, error) {
-			var zero = *new(T)
-			return value != nil && value != zero, nil
+		validatorFn: func(value *T) (bool, error) {
+			return value != nil && *value != T(0), nil
 		},
 	}
 }

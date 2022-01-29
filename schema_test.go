@@ -1,7 +1,11 @@
 package validation_test
 
 import (
+	"fmt"
+	"testing"
+
 	"github.com/go-validation/validation"
+	"github.com/stretchr/testify/assert"
 )
 
 type Address struct {
@@ -27,4 +31,19 @@ func (p *Person) Schema() validation.Schema {
 		validation.Num("age", &p.Age).NotZero(),
 		validation.StructBy("address", &p.Address, AddressSchema),
 	}
+}
+
+func TestSchema(t *testing.T) {
+	var person = Person{
+		Name:    "John",
+		Age:     0,
+		Address: Address{},
+	}
+	vErrs, err := (&person).Schema().Validate()
+
+	assert.Nil(t, err)
+	assert.NotNil(t, vErrs)
+
+	fmt.Printf("%+v", vErrs)
+
 }
